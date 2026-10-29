@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UX Audit Report — Acme Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink-900: oklch(18% 0.012 255);
+      --ink-700: oklch(35% 0.012 255);
+      --ink-500: oklch(52% 0.010 255);
+      --ink-300: oklch(70% 0.008 255);
+      --ink-100: oklch(88% 0.006 255);
+      --ink-50:  oklch(96% 0.004 255);
+      --ink-25:  oklch(98.5% 0.003 255);
+
+      --paper: oklch(99.5% 0.002 255);
+      --rule:  oklch(91% 0.005 255);
+
+      --sev-p0-bg:   oklch(96% 0.02 18);
+      --sev-p0-fg:   oklch(36% 0.24 18);
+      --sev-p0-mid:  oklch(52% 0.22 18);
+      --sev-p1-bg:   oklch(97% 0.018 40);
+      --sev-p1-fg:   oklch(52% 0.20 40);
+      --sev-p1-mid:  oklch(64% 0.18 40);
+      --sev-p2-bg:   oklch(97.5% 0.014 88);
+      --sev-p2-fg:   oklch(54% 0.17 85);
+      --sev-p2-mid:  oklch(66% 0.16 85);
+      --sev-p3-bg:   oklch(97% 0.005 255);
+      --sev-p3-fg:   oklch(46% 0.01 255);
+      --sev-p3-mid:  oklch(58% 0.01 255);
+
+      --green-fg:    oklch(40% 0.14 150);
+      --green-bg:    oklch(97% 0.018 150);
+      --amber-fg:    oklch(48% 0.16 88);
+      --red-fg:      oklch(44% 0.18 25);
+
+      --cat-ux-bg:     oklch(96% 0.015 250);
+      --cat-ux-fg:     oklch(38% 0.16 260);
+      --cat-prod-bg:   oklch(96.5% 0.015 155);
+      --cat-prod-fg:   oklch(36% 0.15 155);
+      --cat-brand-bg:  oklch(96% 0.018 300);
+      --cat-brand-fg:  oklch(38% 0.18 295);
+      --cat-cont-bg:   oklch(96.5% 0.014 55);
+      --cat-cont-fg:   oklch(44% 0.17 52);
+
+      --font-display: 'Source Serif 4', Georgia, serif;
+      --font-ui: 'Barlow', system-ui, sans-serif;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-display);
+      background: var(--paper);
+      color: var(--ink-900);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ─────────────────────────────────────── */
+    .shell {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+      max-width: 1260px;
+      margin: 0 auto;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────── */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--rule);
+      padding: var(--space-10) var(--space-5) var(--space-8);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+      background: var(--paper);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+    .sidebar-logo .org {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-400, var(--ink-300));
+    }
+    .sidebar-logo .report-type {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-500);
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sidebar-nav-label {
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-300);
+      padding: var(--space-3) var(--space-3) var(--space-2);
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      padding: 8px var(--space-3);
+      border: none;
+      background: transparent;
+      border-radius: 5px;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ink-500);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.12s, color 0.12s;
+      line-height: 1.3;
+    }
+    .nav-btn:hover {
+      background: var(--ink-50);
+      color: var(--ink-700);
+    }
+    .nav-btn.active {
+      background: var(--ink-50);
+      color: var(--ink-900);
+      font-weight: 500;
+    }
+    .nav-count {
+      flex-shrink: 0;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink-300);
+      background: var(--ink-50);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 1px 6px;
+      line-height: 1.5;
+    }
+    .nav-btn.active .nav-count {
+      background: var(--rule);
+      color: var(--ink-700);
+    }
+
+    .sidebar-meta {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .sidebar-meta-row {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: var(--ink-300);
+      line-height: 1.4;
+    }
+    .sidebar-meta-row strong {
+      color: var(--ink-500);
+      font-weight: 500;
+    }
+
+    /* ── Main content ────────────────────────────────── */
+    .main {
+      padding: var(--space-12) clamp(var(--space-8), 5vw, 80px) var(--space-16);
+      min-width: 0;
+    }
+
+    /* ── Cover / Masthead ────────────────────────────── */
+    .masthead {
+      margin-bottom: var(--space-12);
+      padding-bottom: var(--space-10);
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-eyebrow {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-400, var(--ink-500));
+      margin-bottom: var(--space-4);
+    }
+    .masthead h1 {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink-900);
+      letter-spacing: -0.01em;
+      font-style: italic;
+      margin-bottom: var(--space-5);
+    }
+    .masthead h1 em {
+      font-style: normal;
+      font-weight: 600;
+    }
+    .masthead-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-5) var(--space-8);
+      margin-top: var(--space-6);
+    }
+    .masthead-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .meta-label {
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-300);
+    }
+    .meta-value {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-700);
+      line-height: 1.4;
+    }
+    .meta-tag {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--ink-500);
+      background: var(--ink-50);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      padding: 1px 7px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Tab panel ───────────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section anatomy ──────────────────────────────── */
+    .report-section {
+      margin-bottom: var(--space-12);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--rule);
+    }
+    .section-number {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--ink-300);
+      white-space: nowrap;
+    }
+    .section-title {
+      font-family: var(--font-ui);
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-700);
+    }
+
+    /* ── Executive Summary ───────────────────────────── */
+    .exec-summary {
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--ink-700);
+      max-width: 72ch;
+      margin-bottom: var(--space-8);
+      font-weight: 400;
+    }
+    .exec-summary strong {
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    /* ── Score strip ─────────────────────────────────── */
+    .score-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+    .score-block {
+      background: var(--ink-25);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: var(--space-5) var(--space-6);
+    }
+    .score-block-label {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-300);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Requirements progress bar */
+    .req-bar-wrap {
+      display: flex;
+      height: 20px;
+      border-radius: 3px;
+      overflow: hidden;
+      gap: 2px;
+      margin-bottom: var(--space-3);
+    }
+    .req-bar-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .req-bar-met    { background: oklch(50% 0.14 150); }
+    .req-bar-partial { background: oklch(62% 0.16 90); }
+    .req-bar-notmet  { background: oklch(55% 0.20 25); }
+
+    .req-legend {
+      display: flex;
+      gap: var(--space-5);
+      flex-wrap: wrap;
+    }
+    .req-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink-500);
+    }
+    .req-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Severity counts */
+    .sev-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-2);
+    }
+    .sev-cell {
+      text-align: center;
+      padding: var(--space-3) var(--space-2);
+    }
+    .sev-num {
+      font-family: var(--font-ui);
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .sev-label {
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sev-p0 .sev-num  { color: var(--sev-p0-fg); }
+    .sev-p0 .sev-label { color: var(--sev-p0-mid); }
+    .sev-p1 .sev-num  { color: var(--sev-p1-fg); }
+    .sev-p1 .sev-label { color: var(--sev-p1-mid); }
+    .sev-p2 .sev-num  { color: var(--sev-p2-fg); }
+    .sev-p2 .sev-label { color: var(--sev-p2-mid); }
+    .sev-p3 .sev-num  { color: var(--sev-p3-fg); }
+    .sev-p3 .sev-label { color: var(--sev-p3-mid); }
+    .sev-divider {
+      width: 1px;
+      align-self: stretch;
+      background: var(--rule);
+    }
+
+    /* ── Requirements table ──────────────────────────── */
+    .req-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-ui);
+      font-size: 13px;
+    }
+    .req-table thead th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--ink-300);
+      padding: var(--space-2) var(--space-4) var(--space-2) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .req-table thead th:last-child { padding-right: 0; }
+    .req-table tbody tr {
+      border-bottom: 1px solid var(--ink-50);
+    }
+    .req-table tbody tr:last-child { border-bottom: none; }
+    .req-table tbody td {
+      padding: var(--space-3) var(--space-4) var(--space-3) 0;
+      vertical-align: top;
+      color: var(--ink-700);
+      line-height: 1.5;
+    }
+    .req-table tbody td:last-child { padding-right: 0; }
+    .req-table tbody td:first-child {
+      color: var(--ink-900);
+      font-weight: 400;
+    }
+    .status-met     { color: var(--green-fg); font-weight: 600; }
+    .status-partial { color: var(--amber-fg); font-weight: 600; }
+    .status-notmet  { color: var(--red-fg); font-weight: 600; }
+
+    /* ── Persona cards ──────────────────────────────── */
+    .persona-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .persona-card {
+      padding: var(--space-5) var(--space-6);
+      border: 1px solid var(--rule);
+      border-radius: 5px;
+      background: var(--paper);
+    }
+    .persona-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+    .persona-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-900);
+      line-height: 1.2;
+    }
+    .persona-role {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink-400, var(--ink-500));
+      margin-top: 2px;
+    }
+    .goal-badge {
+      flex-shrink: 0;
+      font-family: var(--font-ui);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+    .goal-yes     { background: var(--green-bg); color: var(--green-fg); }
+    .goal-partial { background: var(--sev-p2-bg); color: var(--amber-fg); }
+    .goal-no      { background: var(--sev-p0-bg); color: var(--red-fg); }
+
+    .persona-body {
+      font-size: 13.5px;
+      color: var(--ink-600, var(--ink-500));
+      line-height: 1.65;
+      margin-bottom: var(--space-3);
+    }
+    .blocker-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: var(--space-2);
+    }
+    .blocker-list li {
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      color: var(--ink-500);
+      padding-left: var(--space-4);
+      position: relative;
+      line-height: 1.5;
+    }
+    .blocker-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--ink-300);
+    }
+
+    /* ── Issue cards ─────────────────────────────────── */
+    .issue-section { margin-bottom: var(--space-8); }
+    .issue-section-heading {
+      font-family: var(--font-ui);
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-300);
+      margin-bottom: var(--space-4);
+      padding-top: var(--space-2);
+    }
+
+    .issue-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .issue-card {
+      border: 1px solid var(--rule);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .issue-card-head {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px;
+      align-items: stretch;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .issue-card-head:hover { background: var(--ink-25); }
+
+    .issue-chev {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 16px;
+    }
+    .issue-chev svg {
+      width: 16px;
+      height: 16px;
+      color: var(--ink-300);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .issue-card.open .issue-chev svg { transform: rotate(180deg); }
+
+    /* Accordion collapse */
+    .issue-body-wrap {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .issue-card.open .issue-body-wrap { max-height: 2400px; }
+    .issue-body-wrap > .issue-body { border-top: 1px solid var(--rule); }
+
+    .issue-severity-stripe {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 14px;
+    }
+    .sev-pill {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      border-radius: 2px;
+      padding: 2px 4px;
+      line-height: 1.3;
+    }
+    .sev-pill-p0 { background: var(--sev-p0-fg); color: #fff; }
+    .sev-pill-p1 { background: var(--sev-p1-fg); color: #fff; }
+    .sev-pill-p2 { background: var(--sev-p2-fg); color: #fff; }
+    .sev-pill-p3 { background: var(--sev-p3-fg); color: #fff; }
+
+    .issue-head-content {
+      padding: var(--space-4) var(--space-5) var(--space-4) var(--space-2);
+    }
+    .issue-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      margin-bottom: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .issue-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink-900);
+      line-height: 1.3;
+      flex: 1;
+      min-width: 200px;
+    }
+    .issue-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px var(--space-5);
+    }
+    .issue-meta-item {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink-400, var(--ink-500));
+    }
+    .issue-meta-item strong {
+      color: var(--ink-700);
+      font-weight: 500;
+    }
+
+    .issue-body {
+      padding: var(--space-4) var(--space-5) var(--space-5);
+      background: var(--ink-25);
+    }
+    .issue-body-text {
+      font-size: 13.5px;
+      color: var(--ink-700);
+      line-height: 1.7;
+      margin-bottom: var(--space-3);
+      max-width: 72ch;
+    }
+    .issue-body-text:last-child { margin-bottom: 0; }
+
+    .fix-label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green-fg);
+      margin-bottom: var(--space-2);
+    }
+
+    /* Recommended Solution callout */
+    .resolution-box {
+      margin-top: var(--space-4);
+      padding: var(--space-4) var(--space-5);
+      background: var(--green-bg);
+      border: 1px solid oklch(88% 0.04 150);
+      border-radius: 5px;
+    }
+    .resolution-box .issue-body-text {
+      color: oklch(34% 0.04 150);
+      margin-bottom: 0;
+    }
+
+    code {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 13px;
+      background: var(--ink-50);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--ink-700);
+    }
+
+    /* Issue severity stripe colors */
+    .issue-p0 .issue-severity-stripe { background: var(--sev-p0-bg); }
+    .issue-p1 .issue-severity-stripe { background: var(--sev-p1-bg); }
+    .issue-p2 .issue-severity-stripe { background: var(--sev-p2-bg); }
+    .issue-p3 .issue-severity-stripe { background: var(--sev-p3-bg); }
+
+    /* ── Category badge ──────────────────────────────── */
+    .cat-badge {
+      font-family: var(--font-ui);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 3px;
+      padding: 2px 6px;
+      display: inline-block;
+      width: fit-content;
+    }
+    .cat-ux      { background: var(--cat-ux-bg);    color: var(--cat-ux-fg); }
+    .cat-product { background: var(--cat-prod-bg);   color: var(--cat-prod-fg); }
+    .cat-branding { background: var(--cat-brand-bg); color: var(--cat-brand-fg); }
+    .cat-content  { background: var(--cat-cont-bg);  color: var(--cat-cont-fg); }
+
+    /* ── Positive findings ───────────────────────────── */
+    .positive-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .positive-card {
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid oklch(85% 0.05 150);
+      border-radius: 5px;
+      background: var(--green-bg);
+    }
+    .positive-title {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green-fg);
+      margin-bottom: var(--space-1);
+    }
+    .positive-body {
+      font-size: 13.5px;
+      color: oklch(38% 0.05 150);
+      line-height: 1.65;
+    }
+
+    /* Effort indicator — stair bars (reserved; effort is not rendered in the current layout) */
+    .effort-indicator {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 3px;
+    }
+    .effort-bar {
+      display: block;
+      width: 6px;
+      border-radius: 1px;
+      background: var(--rule);
+    }
+    .effort-bar:nth-child(1) { height: 7px; }
+    .effort-bar:nth-child(2) { height: 11px; }
+    .effort-bar:nth-child(3) { height: 15px; }
+    .effort-text {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-500);
+      margin-left: 5px;
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    .effort-low .effort-bar:nth-child(1)  { background: oklch(50% 0.14 150); }
+    .effort-low-med .effort-bar:nth-child(1),
+    .effort-low-med .effort-bar:nth-child(2) { background: oklch(62% 0.16 90); }
+    .effort-med .effort-bar:nth-child(1),
+    .effort-med .effort-bar:nth-child(2)   { background: oklch(62% 0.16 90); }
+    .effort-high .effort-bar:nth-child(1),
+    .effort-high .effort-bar:nth-child(2),
+    .effort-high .effort-bar:nth-child(3)  { background: oklch(55% 0.20 25); }
+
+    /* ── Print ───────────────────────────────────────── */
+    @media print {
+      .shell { display: block; }
+      .sidebar { display: none; }
+      .main { padding: 24px 32px; }
+      .tab-panel { display: block !important; }
+      .issue-body-wrap { max-height: none !important; }
+      .issue-chev { display: none; }
+      .issue-card, .persona-card, .positive-card { break-inside: avoid; }
+    }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--rule);
+        padding: var(--space-6) var(--space-5);
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+      }
+      .sidebar-logo, .sidebar-meta, .sidebar-divider { display: none; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: var(--space-2); }
+      .sidebar-nav-label { display: none; }
+      .main { padding: var(--space-8) var(--space-5) var(--space-12); }
+      .score-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="org">UX Research Division</span>
+      <span class="report-type">Audit Report · 2026</span>
+    </div>
+    <div class="sidebar-divider"></div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Sections</div>
+      <button class="nav-btn active" onclick="showTab('overview')">Overview</button>
+      <button class="nav-btn" onclick="showTab('personas')">Persona Impact <span class="nav-count">2</span></button>
+      <button class="nav-btn" onclick="showTab('issues')">Identified Issues <span class="nav-count">4</span></button>
+      <button class="nav-btn" onclick="showTab('positives')">Positive Findings <span class="nav-count">2</span></button>
+    </nav>
+    <div class="sidebar-meta">
+      <div class="sidebar-meta-row"><strong>Product</strong><br>Acme Notes</div>
+      <div class="sidebar-meta-row"><strong>Date</strong><br>1 January 2026</div>
+      <div class="sidebar-meta-row"><strong>Phase</strong><br>Sign-up flow</div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Masthead -->
+    <div class="masthead">
+      <div class="masthead-eyebrow">UX / UI Audit Report</div>
+      <h1><em>Acme Notes</em> — Sign-up Flow Review</h1>
+      <div class="masthead-meta-grid">
+        <div class="masthead-meta-item">
+          <span class="meta-label">Audit Mode</span>
+          <span class="meta-value"><span class="meta-tag">Flow Analysis</span></span>
+        </div>
+        <div class="masthead-meta-item">
+          <span class="meta-label">Product Phase</span>
+          <span class="meta-value"><span class="meta-tag">Sample data</span></span>
+        </div>
+        <div class="masthead-meta-item">
+          <span class="meta-label">Goal</span>
+          <span class="meta-value">Identify friction that stops new users from creating an account</span>
+        </div>
+        <div class="masthead-meta-item">
+          <span class="meta-label">Personas Audited</span>
+          <span class="meta-value">Persona A · Persona B</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overview tab -->
+    <div id="tab-overview" class="tab-panel active">
+
+      <div class="score-strip">
+        <div class="score-block">
+          <div class="score-block-label">Requirements Coverage &mdash; 3 audited</div>
+          <div class="req-bar-wrap">
+            <div class="req-bar-seg req-bar-met"     style="width:33.3%">1</div>
+            <div class="req-bar-seg req-bar-partial" style="width:33.3%">1</div>
+            <div class="req-bar-seg req-bar-notmet"  style="width:33.4%">1</div>
+          </div>
+          <div class="req-legend">
+            <div class="req-legend-item"><span class="req-legend-dot" style="background:oklch(50% 0.14 150)"></span>Met — 1</div>
+            <div class="req-legend-item"><span class="req-legend-dot" style="background:oklch(62% 0.16 90)"></span>Partial — 1</div>
+            <div class="req-legend-item"><span class="req-legend-dot" style="background:oklch(55% 0.20 25)"></span>Not Met — 1</div>
+          </div>
+        </div>
+
+        <div class="score-block">
+          <div class="score-block-label">Issue Counts by Severity</div>
+          <div class="sev-row">
+            <div class="sev-cell sev-p0"><div class="sev-num">1</div><div class="sev-label">P0 Critical</div></div>
+            <div class="sev-cell sev-p1"><div class="sev-num">1</div><div class="sev-label">P1 High</div></div>
+            <div class="sev-cell sev-p2"><div class="sev-num">1</div><div class="sev-label">P2 Medium</div></div>
+            <div class="sev-cell sev-p3"><div class="sev-num">1</div><div class="sev-label">P3 Low</div></div>
+          </div>
+        </div>
+      </div>
+
+      <section class="report-section">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <span class="section-title">Executive Summary</span>
+        </div>
+        <p class="exec-summary">
+          This is sample content showing the report layout. The sign-up flow is short and easy to follow, but <strong>an error path that fails silently</strong> blocks returning users, and the primary action is hard to reach on mobile. Fixing those two issues would remove most of the drop-off.
+        </p>
+      </section>
+
+      <section class="report-section">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <span class="section-title">Requirements Coverage</span>
+        </div>
+        <table class="req-table">
+          <thead>
+            <tr>
+              <th style="width:42%">Requirement</th>
+              <th style="width:14%">Status</th>
+              <th>Assessment Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A new user can create an account in under two minutes</td>
+              <td><span class="status-met">Met</span></td>
+              <td>Three short steps with sensible defaults.</td>
+            </tr>
+            <tr>
+              <td>The flow works on a phone</td>
+              <td><span class="status-partial">Partial</span></td>
+              <td>Layout reshapes correctly, but the primary action is below the fold at 390px.</td>
+            </tr>
+            <tr>
+              <td>Errors are explained and recoverable</td>
+              <td><span class="status-notmet">Not Met</span></td>
+              <td>An already-registered email gives no feedback and no route to sign in.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div><!-- /tab-overview -->
+
+    <!-- Personas tab -->
+    <div id="tab-personas" class="tab-panel">
+      <section class="report-section">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <span class="section-title">Persona Impact Analysis</span>
+        </div>
+        <div class="persona-grid">
+
+          <div class="persona-card">
+            <div class="persona-card-header">
+              <div>
+                <div class="persona-name">Persona A</div>
+                <div class="persona-role">First-time user · mobile-first</div>
+              </div>
+              <span class="goal-badge goal-partial">Partial</span>
+            </div>
+            <p class="persona-body">Can complete the flow, but loses momentum when the main button is out of view and may abandon before reaching it.</p>
+            <ul class="blocker-list">
+              <li>Primary action below the fold on mobile</li>
+              <li>Optional fields compete with required ones</li>
+            </ul>
+          </div>
+
+          <div class="persona-card">
+            <div class="persona-card-header">
+              <div>
+                <div class="persona-name">Persona B</div>
+                <div class="persona-role">Returning user · desktop</div>
+              </div>
+              <span class="goal-badge goal-no">Blocked</span>
+            </div>
+            <p class="persona-body">Already has an account and gets stuck on the sign-up form with no way back to sign in.</p>
+            <ul class="blocker-list">
+              <li>No message when the email is already registered</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+    </div><!-- /tab-personas -->
+
+    <!-- Issues tab -->
+    <div id="tab-issues" class="tab-panel">
+      <section class="report-section">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <span class="section-title">Identified Issues</span>
+        </div>
+
+        <!-- P0 -->
+        <div class="issue-section">
+          <div class="issue-section-heading">P0 · Critical</div>
+          <div class="issue-list">
+
+            <div class="issue-card issue-p0">
+              <div class="issue-card-head">
+                <div class="issue-severity-stripe">
+                  <span class="sev-pill sev-pill-p0">P0</span>
+                </div>
+                <div class="issue-head-content">
+                  <div class="issue-title-row">
+                    <span class="issue-title">Sign-up form fails silently when the email is already registered</span>
+                    <span class="cat-badge cat-ux">UX</span>
+                  </div>
+                  <div class="issue-meta-row">
+                    <span class="issue-meta-item"><strong>Location:</strong> Sign-up → email step</span>
+                    <span class="issue-meta-item"><strong>Affects:</strong> Persona A, Persona B</span>
+                  </div>
+                </div>
+                <div class="issue-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+              </div>
+              <div class="issue-body-wrap"><div class="issue-body">
+                <p class="issue-body-text">Submitting an address that already has an account returns to the same form with no message. The user cannot tell whether the request failed or is still processing, and has no route to sign in instead.</p>
+                <div class="resolution-box">
+                  <div class="fix-label">Recommended Solution</div>
+                  <p class="issue-body-text">Show an inline error at the email field naming the problem in plain language, with a "Sign in instead" link and a password-reset link.</p>
+                </div>
+              </div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- P1 -->
+        <div class="issue-section">
+          <div class="issue-section-heading">P1 · High</div>
+          <div class="issue-list">
+
+            <div class="issue-card issue-p1">
+              <div class="issue-card-head">
+                <div class="issue-severity-stripe">
+                  <span class="sev-pill sev-pill-p1">P1</span>
+                </div>
+                <div class="issue-head-content">
+                  <div class="issue-title-row">
+                    <span class="issue-title">Primary action is below the fold on mobile</span>
+                    <span class="cat-badge cat-ui">UI</span>
+                  </div>
+                  <div class="issue-meta-row">
+                    <span class="issue-meta-item"><strong>Location:</strong> Sign-up → account details (390px)</span>
+                    <span class="issue-meta-item"><strong>Affects:</strong> Persona A</span>
+                  </div>
+                </div>
+                <div class="issue-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+              </div>
+              <div class="issue-body-wrap"><div class="issue-body">
+                <p class="issue-body-text">At 390px the "Create account" button sits below three optional fields and is not visible without scrolling, so many users stop at the form.</p>
+                <div class="resolution-box">
+                  <div class="fix-label">Recommended Solution</div>
+                  <p class="issue-body-text">Make the primary action sticky at the bottom of the viewport on mobile, and move optional fields behind a "Add more details" disclosure.</p>
+                </div>
+              </div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- P2 -->
+        <div class="issue-section">
+          <div class="issue-section-heading">P2 · Medium</div>
+          <div class="issue-list">
+
+            <div class="issue-card issue-p2">
+              <div class="issue-card-head">
+                <div class="issue-severity-stripe">
+                  <span class="sev-pill sev-pill-p2">P2</span>
+                </div>
+                <div class="issue-head-content">
+                  <div class="issue-title-row">
+                    <span class="issue-title">Button labels vary for the same action</span>
+                    <span class="cat-badge cat-content">Content</span>
+                  </div>
+                  <div class="issue-meta-row">
+                    <span class="issue-meta-item"><strong>Location:</strong> Sign-up flow, all steps</span>
+                    <span class="issue-meta-item"><strong>Affects:</strong> All users</span>
+                  </div>
+                </div>
+                <div class="issue-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+              </div>
+              <div class="issue-body-wrap"><div class="issue-body">
+                <p class="issue-body-text">The final step says "Submit", the previous one says "Continue", and the confirmation says "Finish". The same forward action reads differently on every screen.</p>
+                <div class="resolution-box">
+                  <div class="fix-label">Recommended Solution</div>
+                  <p class="issue-body-text">Use one outcome-based label across the flow, for example "Continue" until the last step and "Create account" on it.</p>
+                </div>
+              </div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- P3 -->
+        <div class="issue-section">
+          <div class="issue-section-heading">P3 · Low</div>
+          <div class="issue-list">
+
+            <div class="issue-card issue-p3">
+              <div class="issue-card-head">
+                <div class="issue-severity-stripe">
+                  <span class="sev-pill sev-pill-p3">P3</span>
+                </div>
+                <div class="issue-head-content">
+                  <div class="issue-title-row">
+                    <span class="issue-title">Success toast disappears before it can be read</span>
+                    <span class="cat-badge cat-ux">UX</span>
+                  </div>
+                  <div class="issue-meta-row">
+                    <span class="issue-meta-item"><strong>Location:</strong> Account created confirmation</span>
+                    <span class="issue-meta-item"><strong>Affects:</strong> Persona B</span>
+                  </div>
+                </div>
+                <div class="issue-chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+              </div>
+              <div class="issue-body-wrap"><div class="issue-body">
+                <p class="issue-body-text">The confirmation toast dismisses after about one second, shorter than the time needed to read it.</p>
+                <div class="resolution-box">
+                  <div class="fix-label">Recommended Solution</div>
+                  <p class="issue-body-text">Keep the toast for at least four seconds, or keep it until the user dismisses it.</p>
+                </div>
+              </div></div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+    </div><!-- /tab-issues -->
+
+    <!-- Positives tab -->
+    <div id="tab-positives" class="tab-panel">
+      <section class="report-section">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <span class="section-title">Positive Findings</span>
+        </div>
+        <div class="positive-list">
+
+          <div class="positive-card">
+            <div class="positive-title">Short, well-sequenced flow</div>
+            <p class="positive-body">Three steps in a natural order, with nothing asked before it is needed. Preserve this structure.</p>
+          </div>
+
+          <div class="positive-card">
+            <div class="positive-title">Clear progress indicator</div>
+            <p class="positive-body">The step counter always shows where the user is and how much is left.</p>
+          </div>
+
+        </div>
+      </section>
+    </div><!-- /tab-positives -->
+
+  </main>
+</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    document.querySelector('[onclick="showTab(\'' + id + '\')"]').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Expandable accordion for issue cards
+  document.querySelectorAll('.issue-card-head').forEach(function (head) {
+    head.addEventListener('click', function () {
+      head.closest('.issue-card').classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

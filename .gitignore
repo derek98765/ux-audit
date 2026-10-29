@@ -1,0 +1,6 @@
+.env
+scripts/node_modules/
+scripts/package-lock.json
+outputs/
+reports/
+references/*/
