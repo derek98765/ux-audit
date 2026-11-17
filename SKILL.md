@@ -1,15 +1,16 @@
 ---
 name: ux-audit
-description: Professional UX/UI audit of a page, flow or feature area, producing a structured JSON report of findings (severity, classification, suggested solutions) from project background in references/. Also turns an audit JSON into a self-contained, interactive HTML report when asked. Use when the user wants a UX/UI audit or peer review of a screen or flow, or says "generate the audit report", "make an HTML report from the audit", or passes an ux-audit JSON file. The report is a separate step — don't produce it unless asked.
-version: 3.0.0
+description: Professional UX/UI audit of a page, flow or feature area, producing a structured JSON report of findings (severity, classification, suggested solutions) with screenshots of the affected screens. Also turns an audit JSON into a self-contained, interactive HTML report with screenshots in the issue cards when asked. Use when the user wants a UX/UI audit or peer review of a screen or flow, or says "generate the audit report", "make an HTML report from the audit", or passes an ux-audit JSON file. The report is a separate step — don't produce it unless asked.
+version: 3.1.0
 user-invocable: true
 argument-hint: "<project-name> [page or flow to audit]  |  report [path to audit JSON]"
 ---
 
 # UX audit
 
-Two modes. Run the audit first; the HTML report is built from the audit's JSON,
-and only when the user asks for it.
+In audit mode, capture screenshots and save them with the findings JSON.
+In report mode, use that JSON and its screenshots to build the HTML report when
+the user asks for it.
 
 ## Pick the mode, then read its file
 
@@ -31,6 +32,8 @@ All inside this skill's directory:
   audited. Other files directly under `references/` belong to the skill, not to a
   project.
 - `outputs/` — the audit JSON, `ux-audit-[project]-[scope]-[YYYY-MM-DD-HHmm].json`.
+- `outputs/<audit-basename>-screenshots/` — screen captures for that JSON. Keep
+  this folder next to the JSON so report mode can resolve its paths later.
 - `reports/` — the HTML report, `ux-audit-report-[project]-[scope]-[YYYY-MM-DD].html`.
 
 `outputs/` and `reports/` hold project data and are not committed.

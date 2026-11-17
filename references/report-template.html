@@ -655,6 +655,25 @@
     }
     .issue-body-text:last-child { margin-bottom: 0; }
 
+    .issue-screenshot {
+      margin: var(--space-4) 0;
+      break-inside: avoid;
+    }
+    .issue-screenshot img {
+      display: block;
+      max-width: 100%;
+      max-height: min(850px, 75vh);
+      width: auto;
+      height: auto;
+      border: 1px solid var(--rule);
+      border-radius: 5px;
+    }
+    .issue-screenshot figcaption, .issue-screenshot-note {
+      margin-top: var(--space-2);
+      font: 13px/1.4 var(--font-ui);
+      color: var(--ink-500);
+    }
+
     .fix-label {
       font-family: var(--font-ui);
       font-size: 11px;
@@ -778,6 +797,7 @@
       .tab-panel { display: block !important; }
       .issue-body-wrap { max-height: none !important; }
       .issue-chev { display: none; }
+      .issue-screenshot img { max-height: 105mm; }
       .issue-card, .persona-card, .positive-card { break-inside: avoid; }
     }
 
@@ -1000,6 +1020,7 @@
               </div>
               <div class="issue-body-wrap"><div class="issue-body">
                 <p class="issue-body-text">Submitting an address that already has an account returns to the same form with no message. The user cannot tell whether the request failed or is still processing, and has no route to sign in instead.</p>
+                <!-- issue-screenshots:F-001 -->
                 <div class="resolution-box">
                   <div class="fix-label">Recommended Solution</div>
                   <p class="issue-body-text">Show an inline error at the email field naming the problem in plain language, with a "Sign in instead" link and a password-reset link.</p>
@@ -1034,6 +1055,7 @@
               </div>
               <div class="issue-body-wrap"><div class="issue-body">
                 <p class="issue-body-text">At 390px the "Create account" button sits below three optional fields and is not visible without scrolling, so many users stop at the form.</p>
+                <!-- issue-screenshots:F-002 -->
                 <div class="resolution-box">
                   <div class="fix-label">Recommended Solution</div>
                   <p class="issue-body-text">Make the primary action sticky at the bottom of the viewport on mobile, and move optional fields behind a "Add more details" disclosure.</p>
@@ -1068,6 +1090,7 @@
               </div>
               <div class="issue-body-wrap"><div class="issue-body">
                 <p class="issue-body-text">The final step says "Submit", the previous one says "Continue", and the confirmation says "Finish". The same forward action reads differently on every screen.</p>
+                <!-- issue-screenshots:F-003 -->
                 <div class="resolution-box">
                   <div class="fix-label">Recommended Solution</div>
                   <p class="issue-body-text">Use one outcome-based label across the flow, for example "Continue" until the last step and "Create account" on it.</p>
@@ -1102,6 +1125,7 @@
               </div>
               <div class="issue-body-wrap"><div class="issue-body">
                 <p class="issue-body-text">The confirmation toast dismisses after about one second, shorter than the time needed to read it.</p>
+                <!-- issue-screenshots:F-004 -->
                 <div class="resolution-box">
                   <div class="fix-label">Recommended Solution</div>
                   <p class="issue-body-text">Keep the toast for at least four seconds, or keep it until the user dismisses it.</p>

@@ -2,7 +2,7 @@
 
 Read after `ux-audit/SKILL.md`, only when the user asks for a report (or passes an audit JSON path). Don't load this for a plain audit.
 
-Generate a polished, interactive HTML report from a ux-audit JSON file (the output of audit mode). The report is self-contained (two external font `<link>` tags are the only allowed external deps) and saved alongside the source JSON.
+Generate a polished, interactive HTML report from a ux-audit JSON file (the output of audit mode). Embed the saved issue screenshots as image data URIs so the report is a single HTML file. Google Fonts are the only external resources.
 
 The canonical visual reference is `references/report-template.html` in this skill's directory (read the whole file before generating). **Every report must match that template exactly** — same CSS custom properties, class names, HTML structure, and JS pattern.
 
@@ -17,7 +17,7 @@ Read and parse the JSON before generating anything. The expected shape is:
 ```json
 {
   "audit": { "project", "scope", "date", "summary" },
-  "findings": [{ "id", "title", "description", "location", "severity", "classification", "solution", "effort", "personas_affected" }],
+  "findings": [{ "id", "title", "description", "location", "severity", "classification", "solution", "effort", "personas_affected", "screenshots", "screenshot_note" }],
   "positives": [{ "id", "title", "classification", "description" }],
   "personas": [{ "name", "role", "goal_status", "body", "blockers" }],
   "requirements": [{ "requirement", "status", "notes" }]
@@ -31,6 +31,8 @@ Read and parse the JSON before generating anything. The expected shape is:
 - `severity`: `"p0"` | `"p1"` | `"p2"` | `"p3"`
 - `classification`: `"ux"` | `"ui"` | `"product"` | `"content"` | `"dev"` (maps to cat-badge class — see Category badges below)
 - `effort`: `"low"` | `"low-med"` | `"med"` | `"high"`
+- `findings[].screenshots`: optional array of `{path, alt, caption}`. Resolve each relative path from the audit JSON directory.
+- `findings[].screenshot_note`: optional reason why a screenshot could not be captured.
 - `personas[].goal_status`: `"Blocked"` | `"Partial"` | `"Unblocked"`
 - `requirements[].status`: `"Met"` | `"Partial"` | `"Not Met"`
 
@@ -247,6 +249,7 @@ Each `.issue-card` structure:
   </div>
   <div class="issue-body-wrap"><div class="issue-body">
     <p class="issue-body-text">Description paragraph</p>
+    <!-- issue-screenshots:F-001 -->
     <div class="resolution-box">
       <div class="fix-label">Recommended Solution</div>
       <p class="issue-body-text">Solution text (from finding.solution)</p>
@@ -263,6 +266,18 @@ Key structural points:
 The `.issue-severity-stripe` background color comes from the parent card class (`.issue-p0` through `.issue-p3`), controlled by CSS. The `sev-pill` class controls the colored text pill.
 
 **"Affects" field**: use `personas_affected` array joined with ", " or "All users" if empty.
+
+#### Embed issue screenshots
+
+In the draft HTML, place exactly one `<!-- issue-screenshots:F-001 -->` marker inside each issue card after its description and before its solution. Replace `F-001` with that finding's actual ID. Then run from the skill directory:
+
+```sh
+python3 scripts/embed_screenshots.py /path/to/audit.json /path/to/draft.html
+```
+
+The script replaces markers in place with `.issue-screenshot` figures containing embedded images, alt text and captions. It handles legacy JSON without screenshot fields and renders a text note for any referenced image it cannot read. If the report is for an older audit, use existing screenshot files or capture the affected screens when accessible, then add the references to the audit JSON before embedding. If none are available, the report still renders. Place figures only in issue cards.
+
+Before delivering, compare the figure count with the number of available screenshot references. Open the report in a browser and check that the images appear when cards expand, fit at mobile width, and remain visible in print preview. Mention any issues whose screenshots are still missing.
 
 ---
 

@@ -1,6 +1,6 @@
 # Audit mode — UX/UI audit to a JSON report
 
-Read after `ux-audit/SKILL.md`. Produces the findings JSON only; the HTML report is a separate mode (`references/report.md`) loaded only when the user asks for it.
+Read after `ux-audit/SKILL.md`. Save the findings JSON and its screenshots. Use HTML report mode (`references/report.md`) when the user asks for it.
 
 Audit work as peer review, not as a simulated user. For problems: name them precisely, explain why they fail, label them with severity and classification, and give proposed solutions. For positives: note what works well, why it succeeds, and label it with a classification — no severity or solution needed.
 
@@ -12,12 +12,14 @@ Audit work as peer review, not as a simulated user. For problems: name them prec
 
 **Identify what to audit**: the scope points to real code in this project — find and read the relevant pages, components, and flows in the codebase, which is the primary source of truth. If the scope is ambiguous, ask which files or routes it maps to. The scope may also be an external URL (a deployed site with no local code) — in that case the rendered page is the primary source of truth, so capturing screens (below) is required, not optional.
 
-**Capture screens**: the audit must reason over what the user actually sees, not just the code. Screens should cover both **1440px laptop** and **390px mobile** viewports. There are two ways to get them:
+## Capture screens
 
-- **User-provided screenshots**: the user may attach screenshots directly in the conversation. Read every image provided before auditing.
-- **Browser via Claude**: if the user asks you to open a URL, use the Claude browser tool to navigate to it and capture the page at both viewport widths.
-
-Read all provided screens before auditing. If no screens are provided and no URL is given, ask the user to supply them.
+- Review the relevant screens at **1440px laptop** and **390px mobile** where the app supports those widths. Use the viewport that shows each finding most clearly for its issue card. Include the other width when it shows a material difference.
+- Use supplied screenshots when they show the affected screen and state. Otherwise launch or reuse the project's local preview or open an explicitly supplied URL. Use the available browser tooling with local fixtures, seeded test data or the app's existing test setup when sign-in or a special state is needed. A repo-only request can be audited against its local preview.
+- Capture at least one screenshot for each issue while the app is in the relevant state. Reproduce the failure locally when feasible. For a source-only or hard-to-reproduce finding, capture the affected screen and describe which control or state is shown. Identify fixture data and reproduced failures in the caption when relevant.
+- Inspect each capture before saving. Wait for loading and transitions to finish unless that state is the finding. Keep the controls and surrounding context that locate the issue. Use test data or redact sensitive values if needed.
+- Save PNG, JPEG or WebP files under `outputs/<audit-basename>-screenshots/`, where the basename is the audit JSON filename without `.json`. Use filenames such as `F-001-mobile.png`. Record paths relative to the audit JSON. Check each path still points to a saved image before finishing the audit.
+- If the affected screen cannot be accessed, save a specific `screenshot_note` on that finding. Continue with the evidence available and report any missing screenshots in the audit summary. For an external-URL-only audit, obtain a rendered screen or ask for a capture before making visual findings.
 
 ## Audit
 
@@ -169,7 +171,12 @@ Save `ux-audit-[project]-[scope]-[YYYY-MM-DD-HHmm].json` to the `outputs/` folde
     "classification": "ux | ui | product | content | dev",
     "solution": "Specific, handoff-ready fix.",
     "effort": "low | medium | high",
-    "personas_affected": [""]
+    "personas_affected": [""],
+    "screenshots": [{
+      "path": "ux-audit-example-onboarding-2026-11-17-1035-screenshots/F-001-mobile.png",
+      "alt": "Sign-in screen at 390px with the email field and Continue button",
+      "caption": "The sign-in form after the local fixture rejects the email. The field still shows no error."
+    }]
   }],
   "positives": [{
     "id": "P-001",
@@ -179,6 +186,8 @@ Save `ux-audit-[project]-[scope]-[YYYY-MM-DD-HHmm].json` to the `outputs/` folde
   }]
 }
 ```
+
+Each screenshot has a relative `path`, short `alt` text describing the visible screen, and a `caption` that ties it to the finding. An inaccessible screen uses `"screenshots": []` and a `screenshot_note` explaining why. Screenshot fields belong on findings only.
 
 **Severity**: p0 = blocks core goal · p1 = likely abandonment · p2 = friction with workaround · p3 = polish  
 **Effort**: low = hours · medium = 1–2 days · high = 3+ days
